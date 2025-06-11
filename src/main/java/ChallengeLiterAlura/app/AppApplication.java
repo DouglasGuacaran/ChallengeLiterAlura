@@ -1,5 +1,6 @@
 package ChallengeLiterAlura.app;
 
+import com.google.gson.JsonObject;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,10 @@ public class AppApplication implements CommandLineRunner {
 		var consumoAPI = new ConsumoAPI();
 		// var json = consumoAPI.obtenerDatos("https://coffee.alexflipnote.dev/random.json");
 		var json = consumoAPI.obtenerDatos("https://gutendex.com/books/?search=frankenstein");
-		System.out.println(json);
+		String libros = consumoAPI.obtenerDatos("https://gutendex.com/books/");
+		System.out.println("************************\n");
+		System.out.println("Estos son mis libros: "+libros);
+		System.out.println("************************\n");
 		System.out.println("Este es mi json: "+json);
 	}
 }
