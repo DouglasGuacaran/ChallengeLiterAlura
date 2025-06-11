@@ -1,4 +1,4 @@
-package ChallengeLiterAlura.app;
+package ChallengeLiterAlura.app.service;
 
 import java.io.IOException;
 import java.net.URI;
