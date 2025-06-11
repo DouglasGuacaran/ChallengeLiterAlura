@@ -13,12 +13,11 @@ public class AppApplication implements CommandLineRunner {
 	}
 	@Override
 	public void run(String... args) throws Exception{
-		System.out.println("¡Hola, Mundo!");
-
+		System.out.println(">>> MÉTODO RUN INICIADO <<<"); // <-- ¿Esto aparece en la consola?
 		var consumoAPI = new ConsumoAPI();
 		// var json = consumoAPI.obtenerDatos("https://coffee.alexflipnote.dev/random.json");
-		var json = consumoAPI.obtenerDatos("http://gutendex.com/books");
+		var json = consumoAPI.obtenerDatos("https://gutendex.com/books/?search=frankenstein");
 		System.out.println(json);
-
+		System.out.println("Este es mi json: "+json);
 	}
 }
