@@ -1,7 +1,5 @@
 package ChallengeLiterAlura.app.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,21 +7,20 @@ import java.util.List;
 
 @Entity
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Book {
 
     @Id
-    @JsonAlias("id")
     private Integer id;
 
-    @JsonAlias("title")
+    @Column(name = "titulo", length = 500)
     private String titulo;
 
     @ElementCollection
-    @JsonAlias("languages")
-    private List<String> languages;
+    private List<String> idiomas;
 
-    @JsonAlias("download_count")
+    @Column(length = 1000)
+    private String imagenUrl;
+
     private Integer descargas;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -32,7 +29,5 @@ public class Book {
             joinColumns = @JoinColumn(name = "libro_id"),
             inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
-    @JsonAlias("authors")
     private List<Author> autores;
-
 }

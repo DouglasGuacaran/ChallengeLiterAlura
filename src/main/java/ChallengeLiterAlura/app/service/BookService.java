@@ -1,5 +1,6 @@
 package ChallengeLiterAlura.app.service;
 
+import ChallengeLiterAlura.app.dto.AutorDTO;
 import ChallengeLiterAlura.app.dto.DatosLibro;
 import ChallengeLiterAlura.app.model.Author;
 import ChallengeLiterAlura.app.model.Book;
@@ -30,39 +31,47 @@ public class BookService {
         this.objectMapper = objectMapper;
     }
 
-    public List<Book> fetchAndSaveBooks(String searchTerm) throws Exception {
-        String url = "https://gutendex.com/books/?search=" + searchTerm;
-        String json = restTemplate.getForObject(url, String.class);
-
-        GutendexResponse response = objectMapper.readValue(json, GutendexResponse.class);
-
+    public List<Book> fetchAndSaveBooks() throws Exception {
+        String baseUrl = "https://gutendex.com/books/";
+        String nextUrl = baseUrl;
         List<Book> savedBooks = new ArrayList<>();
 
-        for (DatosLibro dto : response.getResults()) {
-            Book book = new Book();
-            book.setId(dto.getId());
-            book.setTitulo(dto.getTitulo());
-            book.setDescargas(dto.getDescargas());
-            book.setLanguages(dto.getIdiomas());
+        while (nextUrl != null) {
+            String json = restTemplate.getForObject(nextUrl, String.class);
+            GutendexResponse respuesta = objectMapper.readValue(json, GutendexResponse.class);
 
-            List<Author> persistedAuthors = new ArrayList<>();
-            for (DatosLibro.AutorDTO autorDTO : dto.getAutores()) {
-                Author existing = authorRepository.findByNombre(autorDTO.getNombre()).orElse(null);
-                if (existing == null) {
-                    Author nuevoAutor = new Author();
-                    nuevoAutor.setNombre(autorDTO.getNombre());
-                    nuevoAutor.setAnioFallecimiento(autorDTO.getAnioFallecimiento());
-                    nuevoAutor.setAnioFallecimiento(autorDTO.getAnioFallecimiento());
-                    existing = authorRepository.save(nuevoAutor);
+            for (DatosLibro dto : respuesta.getResults()) {
+                if (bookRepository.existsById(dto.getId())) {
+                    continue; // Evita duplicados
                 }
-                persistedAuthors.add(existing);
+
+                Book book = new Book();
+                book.setId(dto.getId());
+                book.setTitulo(dto.getTitulo());
+                book.setDescargas(dto.getDescargas());
+                book.setIdiomas(dto.getIdiomas());
+                book.setImagenUrl(dto.getImagenUrl());
+
+                List<Author> persistedAuthors = new ArrayList<>();
+                for (AutorDTO autorDTO : dto.getAutores()) {
+                    Author existing = authorRepository.findByNombre(autorDTO.getNombre()).orElse(null);
+                    if (existing == null) {
+                        Author nuevoAutor = new Author();
+                        nuevoAutor.setNombre(autorDTO.getNombre());
+                        nuevoAutor.setAnioNacimiento(autorDTO.getAnioNacimiento());
+                        nuevoAutor.setAnioFallecimiento(autorDTO.getAnioFallecimiento());
+                        existing = authorRepository.save(nuevoAutor);
+                    }
+                    persistedAuthors.add(existing);
+                }
+
+                book.setAutores(persistedAuthors);
+                savedBooks.add(bookRepository.save(book));
             }
 
-            book.setAutores(persistedAuthors);
-            savedBooks.add(bookRepository.save(book));
+            nextUrl = respuesta.getNext();
         }
 
         return savedBooks;
-
     }
 }

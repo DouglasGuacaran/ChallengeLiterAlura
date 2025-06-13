@@ -2,9 +2,11 @@ package ChallengeLiterAlura.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Data
@@ -25,20 +27,10 @@ public class DatosLibro {
     @JsonAlias("authors")
     private List<AutorDTO> autores;
 
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class AutorDTO {
-        @JsonAlias("name")
-        private String nombre;
+    private Map<String, String> formats;
 
-        @JsonAlias("birth_year")
-        private Integer anioNacimiento;
-
-        @JsonAlias("death_year")
-        private Integer anioFallecimiento;
-
+    public String getImagenUrl() {
+        return (formats != null) ? formats.get("image/jpeg") : null;
     }
-
-
 }
 

@@ -17,6 +17,6 @@ public class StartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Cambia el término de búsqueda por lo que necesites
-        bookService.fetchAndSaveBooks("Frankenstein");
+        bookService.fetchAndSaveBooks();
     }
 }
